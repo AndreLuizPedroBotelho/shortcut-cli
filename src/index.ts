@@ -6,7 +6,6 @@ import * as chalk from 'chalk';
 import * as figlet from 'figlet';
 import * as functionsCommand from './utils/functionsCommand';
 const argv = yargs
-  .boolean(['x', 'y', 'z'])
   .help('h')
   .alias('n', 'new')
   .describe('n', 'New comand')
