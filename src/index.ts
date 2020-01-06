@@ -5,16 +5,19 @@ import * as inquirer from 'inquirer';
 import * as chalk from 'chalk';
 import * as figlet from 'figlet';
 import * as functionsCommand from './utils/functionsCommand';
+import * as shell from 'shelljs';
+
 const argv = yargs
+  .usage(chalk.hex('#0066cc').bold(figlet.textSync('SHORTCUT-CLI')))
   .help('h')
+  .alias('e', 'exec')
+  .describe('e', 'Execute Comand')
   .alias('n', 'new')
   .describe('n', 'New comand')
   .alias('l', 'log')
   .describe('l', 'Log Comand')
   .alias('d', 'delete')
   .describe('d', 'Delete Comand')
-  .alias('e', 'exec')
-  .describe('e', 'Execute Comand')
   .argv;
 
 
@@ -32,6 +35,8 @@ const QUESTIONS = [
     when: () => !yargs.argv['description'],
   }
 ];
+
+functionsCommand.checkCommandsFile()
 
 const choices = functionsCommand.choiceCommands();
 
@@ -74,7 +79,7 @@ async function getArgs() {
     functionsCommand.logCommands();
   }
 
-  if (argv.exec) {
+  if ((!argv.log && !argv.delete && !argv.new) || argv.exec) {
     const answersDelete = await inquirer.prompt(QUESTIONSEXECUTE);
     const { idDelete }: any = Object.assign({}, answersDelete, yargs.argv);
 
@@ -83,6 +88,5 @@ async function getArgs() {
 
 }
 
-console.log(chalk.hex('#0066cc').bold(figlet.textSync('SHORTCUT-CLI')));
-
+shell.echo(chalk.hex('#0066cc').bold(figlet.textSync('SHORTCUT-CLI')));
 getArgs();

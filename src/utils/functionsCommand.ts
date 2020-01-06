@@ -21,7 +21,7 @@ const table = new Table({
   }
 });
 
-const filename = path.join(__dirname, '..', 'config', 'commands.json');
+const filename = path.join(__dirname, '..', 'commands.json');
 
 export async function writeCommands(data: TemplateCommands) {
   const commands = await loadCommands();
@@ -36,7 +36,7 @@ export async function writeCommands(data: TemplateCommands) {
   commands.push(data);
 
   await fs.writeFileSync(filename, JSON.stringify(commands));
-  console.log(chalk.green('\nSaved successfully\n'));
+  shell.echo(chalk.green('\nSaved successfully\n'));
 }
 
 export async function deleteCommands(id: number) {
@@ -44,17 +44,31 @@ export async function deleteCommands(id: number) {
   const newComands = commands.filter((item: any) => item.id != id);
 
   await fs.writeFileSync(filename, JSON.stringify(newComands));
-  console.log(chalk.red('\nDeleted successfully\n'));
+  shell.echo(chalk.red('\nDeleted successfully\n'));
 }
 
 export async function executeCommands(id: number) {
+
   const commands = await loadCommands();
   const comandExecute = commands.filter((item: any) => item.id === id);
-  console.log(chalk.underline.yellow('\n Log Command:\n'));
+
+  shell.echo(chalk.underline.yellow('\n Log Command:\n'));
   if (comandExecute.length > 0) {
-    shell.exec(comandExecute[0].commands);
-    console.log('\n');
+    try {
+      shell.exec(comandExecute[0].commands);
+      shell.echo('\n');
+    } catch (err) {
+      shell.echo(err);
+    }
   }
+
+}
+
+export function checkCommandsFile() {
+  if (!shell.test('-f', filename)) {
+    shell.touch(filename);
+    shell.echo('[]').to(filename)
+  };
 }
 
 function loadCommands() {
@@ -72,7 +86,7 @@ export function logCommands() {
     ]);
   })
 
-  console.log(table.toString());
+  shell.echo(table.toString());
 }
 
 export function choiceCommands() {
